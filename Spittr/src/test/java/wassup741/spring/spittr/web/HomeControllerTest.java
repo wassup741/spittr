@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class HomeControllerTest {
 
 	@Test
-	public void testHomePage() throws Exception {
+	public void homePage() throws Exception {
 
 		HomeController controller = new HomeController();
 		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
