@@ -20,12 +20,50 @@ import wassup741.spring.spittr.data.SpittleRepositiry;
 public class SpittleControllerTest {
 
 	@Test
+	public void somePageSpittles() throws Exception {
+		int spittlesCount = 5;
+		long max = 2386;
+		String explicitParametersUrl = "/spittles?max=" + max + "&count="
+				+ spittlesCount;
+
+		testFetch(explicitParametersUrl, max, spittlesCount);
+	}
+
+	@Test
 	public void recentSpittles() throws Exception {
-		int spittlesCount = 20;
-		List<Spittle> expectedSpittles = createSpittles(spittlesCount);
+		int spittlesCount = SpittleController.DEFAULT_COUNT;
+		long max = SpittleController.DEFAULT_MAX;
+		String defaultParametersUrl = "/spittles";
+
+		testFetch(defaultParametersUrl, max, spittlesCount);
+	}
+
+	@Test
+	public void oneSpittle() throws Exception {
+		Long spittleId = 4815162342L;
+		Spittle extectedSpittle = new Spittle(spittleId, "Test spittle",
+				new Date(), 0d, 0d);
 
 		SpittleRepositiry repositiry = Mockito.mock(SpittleRepositiry.class);
-		Mockito.when(repositiry.findSpittles(Long.MAX_VALUE, spittlesCount))
+		Mockito.when(repositiry.findOne(spittleId)).thenReturn(extectedSpittle);
+
+		SpittleController spittleController = new SpittleController(repositiry);
+
+		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(spittleController)
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get("/spittles/" + spittleId))
+				.andExpect(MockMvcResultMatchers.view().name("spittle"))
+				.andExpect(
+					MockMvcResultMatchers.model().attributeExists("spittle"))
+				.andExpect(MockMvcResultMatchers.model().attribute("spittle",
+					extectedSpittle));
+	}
+
+	private void testFetch(String url, long max, int count) throws Exception {
+		List<Spittle> expectedSpittles = createSpittles(count);
+
+		SpittleRepositiry repositiry = Mockito.mock(SpittleRepositiry.class);
+		Mockito.when(repositiry.findSpittles(max, count))
 				.thenReturn(expectedSpittles);
 
 		SpittleController controller = new SpittleController(repositiry);
@@ -34,8 +72,8 @@ public class SpittleControllerTest {
 				.setSingleView(
 					new InternalResourceView("/WEB-INF/views/spittles.jsp"))
 				.build();
-		
-		mockMvc.perform(MockMvcRequestBuilders.get("/spittles"))
+
+		mockMvc.perform(MockMvcRequestBuilders.get(url))
 				.andExpect(MockMvcResultMatchers.view().name("spittles"))
 				.andExpect(MockMvcResultMatchers.model()
 						.attributeExists("spittleList"))

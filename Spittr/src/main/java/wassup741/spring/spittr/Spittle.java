@@ -18,7 +18,12 @@ public class Spittle {
 
 	public Spittle(String message, Date time, Double longitude,
 			Double latitude) {
-		this.id = null;
+		this(null, message, time, longitude, latitude);
+	}
+
+	public Spittle(Long id, String message, Date time, Double longitude,
+			Double latitude) {
+		this.id = id;
 		this.message = message;
 		this.time = time;
 		this.longitude = longitude;
@@ -48,11 +53,11 @@ public class Spittle {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Spittle == false) {
-			
+
 			return false;
 		}
 		Spittle that = (Spittle) obj;
-		
+
 		return new EqualsBuilder().appendSuper(super.equals(obj))
 				.append(id, that.id).append(time, that.time).isEquals();
 	}

@@ -19,4 +19,9 @@ public class SpittleRepositoryImpl implements SpittleRepositiry {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public Spittle findOne(long spittleId) {
+		return new Spittle(spittleId, "Fake spittle", new Date(), 0d, 0d);
+	}
+
 }
