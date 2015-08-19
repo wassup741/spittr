@@ -52,14 +52,16 @@ public class Spittle {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
 		if (obj instanceof Spittle == false) {
-
 			return false;
 		}
 		Spittle that = (Spittle) obj;
 
-		return new EqualsBuilder().appendSuper(super.equals(obj))
-				.append(id, that.id).append(time, that.time).isEquals();
+		return new EqualsBuilder().append(id, that.id).append(time, that.time)
+				.isEquals();
 	}
 
 	@Override

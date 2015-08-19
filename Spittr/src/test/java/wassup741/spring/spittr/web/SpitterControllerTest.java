@@ -23,8 +23,8 @@ public class SpitterControllerTest {
 	public void shouldProcessRegistration() throws Exception {
 		SpitterRepository mockRepository = Mockito
 				.mock(SpitterRepository.class);
-		Spitter unsaved = new Spitter("jbauer", "24hours", "Jack", "Bauer");
-		Spitter saved = new Spitter(24L, "jbauer", "24hours", "Jack", "Bauer");
+		Spitter unsaved = new Spitter("jbauer", "Jack", "Bauer", "24hours");
+		Spitter saved = new Spitter(24L, "jbauer", "Jack", "Bauer", "24hours");
 		Mockito.when(mockRepository.save(unsaved)).thenReturn(saved);
 
 		SpitterController controller = new SpitterController(mockRepository);
@@ -35,5 +35,42 @@ public class SpitterControllerTest {
 				.andExpect(
 					MockMvcResultMatchers.redirectedUrl("/spitter/jbauer"));
 		Mockito.verify(mockRepository, Mockito.atLeastOnce()).save(unsaved);
+	}
+
+	@Test
+	public void shouldValidationFailRegistration() throws Exception {
+		SpitterRepository mockRepository = Mockito
+				.mock(SpitterRepository.class);
+		Spitter unsaved = new Spitter("jb", "Jack", "Bauer", "24hours");
+		Spitter saved = new Spitter(24L, "jb", "Jack", "Bauer", "24hours");
+		Mockito.when(mockRepository.save(unsaved)).thenReturn(saved);
+
+		SpitterController controller = new SpitterController(mockRepository);
+		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+		mockMvc.perform(MockMvcRequestBuilders.post("/spitter/register")
+				.param("firstName", "J").param("lastName", "B")
+				.param("username", "").param("password", "2"))
+				.andExpect(MockMvcResultMatchers.view().name("registerForm"));
+		Mockito.verify(mockRepository, Mockito.never()).save(unsaved);
+	}
+
+	@Test
+	public void spitter() throws Exception {
+		String username = "fake";
+		Spitter spitter = new Spitter(username, username, username, username);
+
+		SpitterRepository repository = Mockito.mock(SpitterRepository.class);
+		Mockito.when(repository.find(username)).thenReturn(spitter);
+
+		SpitterController controller = new SpitterController(repository);
+
+		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/spitter/" + username))
+				.andExpect(MockMvcResultMatchers.view().name("profile"))
+				.andExpect(
+					MockMvcResultMatchers.model().attributeExists("spitter"))
+				.andExpect(MockMvcResultMatchers.model().attribute("spitter",
+					spitter));
 	}
 }
