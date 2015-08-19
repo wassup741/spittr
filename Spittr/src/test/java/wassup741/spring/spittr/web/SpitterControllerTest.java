@@ -38,7 +38,7 @@ public class SpitterControllerTest {
 	}
 
 	@Test
-	public void shouldValidationFailRegistration() throws Exception {
+	public void shouldFailRegistration() throws Exception {
 		SpitterRepository mockRepository = Mockito
 				.mock(SpitterRepository.class);
 		Spitter unsaved = new Spitter("jb", "Jack", "Bauer", "24hours");
